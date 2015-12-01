@@ -8,6 +8,12 @@ class FeedbacksController < ApplicationController
 
   # GET /feedbacks/1
   def show
+    @attachment = FeedbackAttachment.find_by_feedback_id(@feedback.id)
+  end
+
+  def download_feedback_attachment
+    @attachment = FeedbackAttachment.find_by_feedback_id(params[:id])
+    send_data @attachment.data, :filename => @attachment.filename, :type => @attachment.content_type,  :disposition => 'attachment; filename=' + @attachment.filename
   end
 
   # GET /feedbacks/new
@@ -23,10 +29,25 @@ class FeedbacksController < ApplicationController
   def create
     @feedback = Feedback.new(feedback_params)
 
-    if @feedback.save
-      redirect_to @feedback, notice: 'Feedback was successfully created.'
+    if verify_recaptcha
+      if @feedback.save
+        if params[:feedback][:attachment]
+          @attachment = FeedbackAttachment.new
+          @attachment.uploaded_file = params[:feedback][:attachment]
+          @attachment.feedback_id = @feedback.id
+          if @attachment.save
+            redirect_to @feedback, notice: 'Feedback was successfully created.'
+          else
+            redirect_to :back, notice: 'There was a problem while submitting your attachment.'
+          end
+        else
+          redirect_to @feedback, notice: 'Feedback was successfully created.'
+        end
+      else
+        render :new
+      end
     else
-      render :new
+      redirect_to :back, notice: 'Feedback not created.'
     end
   end
 
@@ -45,14 +66,18 @@ class FeedbacksController < ApplicationController
     redirect_to feedbacks_url, notice: 'Feedback was successfully destroyed.'
   end
 
-  private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_feedback
-      @feedback = Feedback.find(params[:id])
-    end
+  def action_allowed?
+    return true
+  end
 
-    # Only allow a trusted parameter "white list" through.
-    def feedback_params
-      params.require(:feedback).permit(:user_id, :title, :description, :status)
-    end
+  private
+  # Use callbacks to share common setup or constraints between actions.
+  def set_feedback
+    @feedback = Feedback.find(params[:id])
+  end
+
+  # Only allow a trusted parameter "white list" through.
+  def feedback_params
+    params.require(:feedback).permit(:user_id, :title, :description, :status)
+  end
 end
