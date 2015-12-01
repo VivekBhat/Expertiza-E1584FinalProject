@@ -3,7 +3,7 @@ Expertiza::Application.routes.draw do
   resources :feedbacks
   get 'auth/:provider/callback', to: 'auth#google_login'
   get 'auth/failure', to: 'content_pages#view'
-
+  match 'feedbacks/show/:id/download_feedback_attachment' => 'feedbacks#download_feedback_attachment', :via => [:get], :as => 'download_attachment'
   resources :bookmarks do
     collection do
       post :save_bookmark_rating_score
