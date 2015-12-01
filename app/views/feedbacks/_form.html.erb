@@ -34,8 +34,11 @@
     <div class="g-recaptcha" data-sitekey="6LfY_RETAAAAAMH85s0nAZWZ15KVGYcZWRZExNJI"></div>
 <%= recaptcha_tags %>
     <br>
-
+    <% if session[:extra].nil? %>
     <%= submit_tag "Submit" %>
+        <% else %>
+        <%= submit_tag "Submit" , :disabled => session[:extra] >5 %>
+        <%end%>
     <div class="actions">
     </div>
     <br>

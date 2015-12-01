@@ -2,7 +2,9 @@
   <%#= @content_page.content_html %>
   <h1>Welcome.</h1>
   <div class="login-panel">
+    <%= session.inspect %>
   <% if not session[:user] %>
+
     <%= render :partial => 'auth/login' %><br/>
     <% if session[:user].nil? %>
     <% else %>
