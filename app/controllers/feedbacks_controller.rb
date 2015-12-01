@@ -28,7 +28,7 @@ class FeedbacksController < ApplicationController
   # POST /feedbacks
   def create
     @feedback = Feedback.new(feedback_params)
-
+    @feedback.status = "New"
     if verify_recaptcha
       if @feedback.save
         if params[:feedback][:attachment]
@@ -48,6 +48,11 @@ class FeedbacksController < ApplicationController
       end
     else
       redirect_to :back, notice: 'Feedback not created.'
+      if session[:extra][:value]==nil
+        session[:extra]= 0
+      else
+        session[:extra] ={:value => session[:extra] + 1, :expires => 1.minute.from_now}
+      end
     end
   end
 
@@ -67,7 +72,13 @@ class FeedbacksController < ApplicationController
   end
 
   def action_allowed?
-    return true
+    #if params[:action] == 'edit' or params[:action] == 'update'
+     if ["edit", "update", "index", "destroy"].include? params[:action]
+      return true if ['Super-Administrator'].include? current_role_name
+      return false
+    else
+      return true
+    end
   end
 
   private
