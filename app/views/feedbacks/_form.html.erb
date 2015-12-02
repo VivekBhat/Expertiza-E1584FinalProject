@@ -16,31 +16,35 @@
     <p><label for="feedback_user_id">Email</label> (Mandatory field.)
       <img src="/assets/info.png" title='Enter Expertiza registered email id.'>
       <br/>
-      <%= text_field 'feedback', 'user_id', :maxlength=>"25"  %></p>
+      <% if @user_email.nil? %>
+          <%= text_field 'feedback', 'user_id', :maxlength=>"25", :readonly=> false%></p>
+      <% else %>
+          <%= text_field 'feedback', 'user_id', :maxlength=>"25" , :value => @user_email, :readonly=>true%></p>
+      <% end %>
 
-    <p><label for="feedback_title">Title</label> (Mandatory field.)
-      <img src="/assets/info.png" title='The max character limit is 160.'>
-      <br/>
-      <%= text_field 'feedback', 'title', :maxlength=>"80" %></p>
+      <p><label for="feedback_title">Title</label> (Mandatory field.)
+        <img src="/assets/info.png" title='The max character limit is 160.'>
+        <br/>
+        <%= text_field 'feedback', 'title', :maxlength=>"80" %></p>
 
-    <p><label for="feedback_description">Description</label><br/>
-      <%= text_area 'feedback', 'description', :rows => 4, :cols => 78  %>
+      <p><label for="feedback_description">Description</label><br/>
+        <%= text_area 'feedback', 'description', :rows => 4, :cols => 78  %>
 
-    <p><label>Attach a File</label><br/>
-      <%= f.file_field :attachment, accept: 'image/png,image/gif,image/jpeg' %>
+      <p><label>Attach a File</label><br/>
+        <%= f.file_field :attachment, accept: 'image/png,image/gif,image/jpeg' %>
+        <br>
+
+      <p><label>CAPTCHA</label>
+      <div class="g-recaptcha" data-sitekey="6LfY_RETAAAAAMH85s0nAZWZ15KVGYcZWRZExNJI"></div>
+      <%= recaptcha_tags %>
       <br>
-
-    <p><label>CAPTCHA</label>
-    <div class="g-recaptcha" data-sitekey="6LfY_RETAAAAAMH85s0nAZWZ15KVGYcZWRZExNJI"></div>
-<%= recaptcha_tags %>
-    <br>
-    <% if session[:extra].nil? %>
-    <%= submit_tag "Submit" %>
-        <% else %>
-        <%= submit_tag "Submit" , :disabled => session[:extra][:value] >5 && session[:extra][:expires]> Time.now %>
-        <%end%>
-    <div class="actions">
-    </div>
-    <br>
+      <% if session[:extra].nil? %>
+          <%= submit_tag "Submit" %>
+      <% else %>
+          <%= submit_tag "Submit" , :disabled => session[:extra][:value] >5 && session[:extra][:expires]> Time.now %>
+      <%end%>
+      <div class="actions">
+      </div>
+      <br>
 
 <% end %>

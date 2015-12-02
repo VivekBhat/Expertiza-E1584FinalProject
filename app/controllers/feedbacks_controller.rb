@@ -1,13 +1,15 @@
 class FeedbacksController < ApplicationController
   before_action :set_feedback, only: [:show, :edit, :update, :destroy]
   before_action :verify_captcha, only: [:create]
- def verify_captcha
-   if !verify_recaptcha
-     redirect_to :back, notice: 'Wrong captcha'
-   else
-     @settings = FeedbackSetting.find(1)
-   end
-end
+
+  def verify_captcha
+    if !verify_recaptcha
+      redirect_to :back, notice: 'Wrong captcha'
+    else
+      @settings = FeedbackSetting.find(1)
+    end
+  end
+
   # GET /feedbacks
   def index
     @feedbacks = Feedback.all
@@ -25,6 +27,12 @@ end
 
   # GET /feedbacks/new
   def new
+    user = session[:user]
+    if user.present?
+      @user_email = user.email
+    else
+      @user_email = nil
+    end
     @feedback = Feedback.new
   end
 
@@ -36,6 +44,23 @@ end
   def create
     @feedback = Feedback.new(feedback_params)
     @feedback.status = "New"
+
+    user = session[:user]
+    if user.present?
+      @user_email = user.email
+    else
+      @user_email = nil
+    end
+
+    if @user_email.nil?
+      @user = User.find_by_email(params[:feedback][:user_id])
+    else
+      @user = User.find_by_email(@user_email)
+    end
+
+    if @user.present?
+      @feedback.user_id = @user.id
+
       if @feedback.save
         if params[:feedback][:attachment]
           create_attachment
@@ -45,7 +70,12 @@ end
       else
         redirect_to @feedback, notice: 'Feedback not created.'
       end
+    else
+      redirect_to :back, notice: 'Please enter your registered email to Expertiza'
+    end
+
   end
+
   def create_attachment
 
     if params[:feedback][:attachment].size > @settings.max_attachment_size.kilobytes
@@ -57,14 +87,14 @@ end
       if @attachment.save
         redirect_to @feedback, notice: 'Feedback was successfully created.'
       else
+        @feedback.destroy
         redirect_to :back, notice: @attachment.errors[:content_type]
       end
     end
 
-
   end
-  # PATCH/PUT /feedbacks/1
 
+  # PATCH/PUT /feedbacks/1
   def update
     if @feedback.update(feedback_params)
       redirect_to @feedback, notice: 'Feedback was successfully updated.'
