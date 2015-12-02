@@ -7,7 +7,7 @@ class FeedbacksController < ApplicationController
       redirect_to :back, notice: 'Wrong captcha'
     else
       @settings = FeedbackSetting.find(1)
-    end
+   end
   end
 
   # GET /feedbacks
