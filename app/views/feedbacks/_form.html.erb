@@ -27,7 +27,7 @@
       <%= text_area 'feedback', 'description', :rows => 4, :cols => 78  %>
 
     <p><label>Attach a File</label><br/>
-      <%= f.file_field :attachment %>
+      <%= f.file_field :attachment, accept: 'image/png,image/gif,image/jpeg' %>
       <br>
 
     <p><label>CAPTCHA</label>
@@ -37,7 +37,7 @@
     <% if session[:extra].nil? %>
     <%= submit_tag "Submit" %>
         <% else %>
-        <%= submit_tag "Submit" , :disabled => session[:extra] >5 %>
+        <%= submit_tag "Submit" , :disabled => session[:extra][:value] >5 && session[:extra][:expires]> Time.now %>
         <%end%>
     <div class="actions">
     </div>

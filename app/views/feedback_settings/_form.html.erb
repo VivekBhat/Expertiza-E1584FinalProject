@@ -1,0 +1,45 @@
+<%= form_for(@feedback_setting) do |f| %>
+  <% if @feedback_setting.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@feedback_setting.errors.count, "error") %> prohibited this feedback_setting from being saved:</h2>
+
+      <ul>
+      <% @feedback_setting.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    support email<br>
+    <%= f.text_field :support_mail %>
+  </div>
+  <div class="field">
+    max no. of attachments<br>
+    <%= f.number_field :max_attachments %>
+  </div>
+  <div class="field">
+    Max Attachment Size<br>
+    <%= f.number_field :max_attachment_size %>
+  </div>
+  <div class="field">
+    Max number of wrong retries<br>
+    <%= f.number_field :wrong_retries %>
+  </div>
+  <div class="field">
+    Wait Duration<br>
+    <%= f.number_field :wait_duration %>
+  </div>
+  <div class="field">
+    wait_duration_increment<br>
+    <%= f.number_field :wait_duration_increment %>
+  </div>
+  <div class="field">
+    support_team<br>
+    <%= f.text_field :support_team %>
+  </div>
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>
