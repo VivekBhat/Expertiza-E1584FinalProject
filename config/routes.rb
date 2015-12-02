@@ -1,5 +1,6 @@
 Expertiza::Application.routes.draw do
 
+  resources :feedback_settings
   resources :feedbacks
   get 'auth/:provider/callback', to: 'auth#google_login'
   get 'auth/failure', to: 'content_pages#view'
